@@ -13,6 +13,9 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
         <script type="text/javascript" src="https://cdn.conversejs.org/4.2.0/dist/converse.min.js" charset="utf-8"></script>
         <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+
+        <script type="text/javascript" src="js/aei-api.js"></script>
+        <script type="text/javascript" src="js/aei-utils.js"></script>
     </head>
     <body>
         <div class="card text-center" style="margin-left: 10px;">
@@ -36,7 +39,6 @@
 
         <script type="text/javascript" src="js/affect-data.js"></script>
         <script type="text/javascript" src="js/sunburst-chart.js"></script>
-        <script type="text/javascript" src="js/aei-api.js"></script>
         <script type="text/javascript" src="js/conversejs-chat.js"></script>
         <script type="text/javascript">
             d3.select(self.frameElement).style("height", "600px").style("width", "800px");
@@ -52,7 +54,7 @@
                 let userId = $.cookie(jid);
                 console.log(userId);
                 // make an API call to the aEi.ai service and get updated user affective state
-                getUser(userId)
+                getUser(userId, getAccessToken())
                     .then(function (data) {
                         console.log(data);
                         let user = data.user;

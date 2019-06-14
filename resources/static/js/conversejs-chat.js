@@ -26,7 +26,7 @@ converse.plugins.add('aei-plugin', {
             // create a new aEi user if not already created
             let userId = $.cookie(jid);
             if (typeof userId === "undefined" || userId === null || userId === "") {
-                createNewUser(jid);
+                createNewUser(jid, getAccessToken());
             }
         });
 
@@ -43,10 +43,10 @@ converse.plugins.add('aei-plugin', {
             // check if an interaction is already created
             if (typeof interactionId !== "undefined" && interactionId !== null) {
                 // add recipient to the available interaction
-                addUserToInteraction(interactionId, recipientId);
+                addUserToInteraction(interactionId, recipientId, getAccessToken());
             } else {
                 // create a new interaction and add sender and recipient to it
-                createNewInteraction([senderId, recipientId]);
+                createNewInteraction([senderId, recipientId], getAccessToken());
             }
         });
 
@@ -56,7 +56,7 @@ converse.plugins.add('aei-plugin', {
             let userId = $.cookie(jid);
             let interactionId = $.cookie('interaction');
             // add user's utterance to the aEi.ai interaction to update involved users' affective state
-            newTextInput(userId, interactionId, messageText)
+            newTextInput(userId, interactionId, messageText, getAccessToken())
                 .then(function (data) {
                     console.log("User updated successfully");
                     console.log(data);
