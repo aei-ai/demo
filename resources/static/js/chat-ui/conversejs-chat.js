@@ -1,7 +1,3 @@
-// NOTE: register to the aEi service and use replace your credential with demo credentials
-var username = "demouser"; // default demo username (NOTE: replace this with your username)
-var password = "DemoPass123!"; // default demo password (NOTE: replace this with your password)
-
 // NOTE: we created the following 3 ConverseJS users for demo. You can create your own users to login to chats
 // Demo user 1 --> username(jid): d1aei@conversejs.org  /  password: d1aei
 // Demo user 2 --> username(jid): d2aei@conversejs.org  /  password: d2aei
@@ -65,6 +61,8 @@ converse.plugins.add('aei-plugin', {
                     console.log(user);
                     // visualize updated user
                     updateData(user2Data(user));
+                    // refresh scatter chart
+                    scatterChart.refreshChart();
                 }).catch(function (data) {
                     console.log(data);
                     console.log("Updating user failed");

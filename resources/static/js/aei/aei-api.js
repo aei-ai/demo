@@ -1,3 +1,8 @@
+let AEI_AI_URL = "https://aei.ai";
+let API_VERSION = "v1";
+let API_URL = AEI_AI_URL + "/api/" + API_VERSION;
+
+
 /**
  * Logs in to the aEi.ai service with given client username and password.
  *
@@ -10,7 +15,7 @@ function login(username, password) {
         data: 'username=' + username + '&password=' + password,
         timeout: 20000,
         type: 'POST',
-        url: '/oauth/token?grant_type=client_credentials',
+        url: AEI_AI_URL + '/oauth/token?grant_type=client_credentials',
         headers: {
             'Authorization': 'Basic ' + btoa(username + ':' + password),
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -48,7 +53,7 @@ function register(username, email, password) {
     var registerPromise = $.ajax({
         timeout: 20000,
         type: 'POST',
-        url: '/register',
+        url: AEI_AI_URL + '/register',
         headers: {
             'username': username,
             'email': email,
@@ -71,6 +76,72 @@ function register(username, email, password) {
 }
 
 /**
+ * Resets aEi.ai account password by sending an email to the client.
+ *
+ * @param email Client's email.
+ * @return A promise to reset the password.
+ */
+function resetPassword(email) {
+    // promise to reset password (send a reset password email to the client)
+    var resetPasswordPromise = $.ajax({
+        timeout: 20000,
+        type: 'POST',
+        url: AEI_AI_URL + '/reset-password',
+        data: {email: email}
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't send reset password email!");
+        } else {
+            console.log("reset password email sent successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Sending reset password email failed");
+        return data;
+    });
+
+    return resetPasswordPromise;
+}
+
+/**
+ * Updates aEi.ai account password for the given username and password-reset token.
+ *
+ * @param username Client's username.
+ * @param passwordResetToken Password-reset token provided by server.
+ * @param newPassword Client's new password.
+ * @return A promise to update client's password.
+ */
+function updatePassword(username, passwordResetToken, newPassword) {
+    // promise to reset password (send a reset password email to the client)
+    var updatePasswordPromise = $.ajax({
+        timeout: 20000,
+        type: 'PUT',
+        url: AEI_AI_URL + '/update-password',
+        headers: {
+            'username': username,
+            'token': passwordResetToken,
+            'password': newPassword
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't update password!");
+        } else {
+            console.log("Password updated successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Updating password failed");
+        return data;
+    });
+
+    return updatePasswordPromise;
+}
+
+/**
  * Creates a new user with given username in aEi.ai service.
  *
  * @param username New user's username.
@@ -81,7 +152,7 @@ function createNewUser(username, accessToken) {
     $.ajax({
         timeout: 20000,
         type: 'POST',
-        url: '/api/v1/users',
+        url: API_URL + '/users',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -124,7 +195,7 @@ function createNewInteraction(userIds, accessToken) {
         data: data,
         timeout: 20000,
         type: 'POST',
-        url: '/api/v1/interactions',
+        url: API_URL + '/interactions',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -157,7 +228,7 @@ function addUserToInteraction(interactionId, userId, accessToken) {
     $.ajax({
         timeout: 20000,
         type: 'PUT',
-        url: '/api/v1/interactions/' + interactionId + '/users/' + userId,
+        url: API_URL + '/interactions/' + interactionId + '/users/' + userId,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -189,7 +260,7 @@ function newTextInput(userId, interactionId, text, accessToken) {
         data: {text: text},
         timeout: 20000,
         type: 'POST',
-        url: '/api/v1/inputs/text' + '?user_id=' + userId + '&interaction_id=' + interactionId,
+        url: API_URL + '/inputs/text' + '?user_id=' + userId + '&interaction_id=' + interactionId,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -220,7 +291,7 @@ function getUser(userId, accessToken) {
     var getUserPromise = $.ajax({
         timeout: 20000,
         type: 'GET',
-        url: '/api/v1/users/' + userId,
+        url: API_URL + '/users/' + userId,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -253,7 +324,7 @@ function getUsedFreeQueries(accessToken) {
     var getUsedFreeQueriesPromise = $.ajax({
         timeout: 20000,
         type: 'GET',
-        url: '/api/v1/metrics/queries/used',
+        url: API_URL + '/metrics/queries/used',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -286,7 +357,7 @@ function getUsedPaidQueries(accessToken) {
     var getUsedPaidQueriesPromise = $.ajax({
         timeout: 20000,
         type: 'GET',
-        url: '/api/v1/metrics/queries',
+        url: API_URL + '/metrics/queries',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -319,7 +390,7 @@ function getPaymentSources(accessToken) {
     let getPaymentSourcesPromise = $.ajax({
         timeout: 20000,
         type: 'GET',
-        url: "/api/v1/sources",
+        url: API_URL + "/sources",
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
@@ -351,7 +422,7 @@ function addPaymentSource(source, accessToken) {
         timeout: 20000,
         data: {'source': source},
         type: 'POST',
-        url: "/api/v1/sources",
+        url: API_URL + "/sources",
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
@@ -382,7 +453,7 @@ function getSubscription(accessToken) {
     let getSubscriptionPromise = $.ajax({
         timeout: 20000,
         type: 'GET',
-        url: "/api/v1/subscriptions",
+        url: API_URL + "/subscriptions",
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
@@ -412,7 +483,7 @@ function updateSubscription(subscriptionType, accessToken) {
         data: {'subscription_type': subscriptionType},
         timeout: 20000,
         type: 'PUT',
-        url: '/api/v1/subscriptions',
+        url: API_URL + '/subscriptions',
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
@@ -440,7 +511,7 @@ function changePassword(password, accessToken) {
     let passwordChangePromise = $.ajax({
         timeout: 20000,
         type: 'PUT',
-        url: '/api/v1/clients/password',
+        url: API_URL + '/clients/password',
         headers: {
             'Authorization': 'Bearer ' + accessToken,
             'password': password
@@ -461,70 +532,4 @@ function changePassword(password, accessToken) {
     });
 
     return passwordChangePromise;
-}
-
-/**
- * Resets aEi.ai account password by sending an email to the client.
- *
- * @param email Client's email.
- * @return A promise to reset the password.
- */
-function resetPassword(email) {
-    // promise to reset password (send a reset password email to the client)
-    var resetPasswordPromise = $.ajax({
-        timeout: 20000,
-        type: 'POST',
-        url: '/reset-password',
-        data: {email: email}
-    }).done((data) => {
-        console.log(data);
-        if (data.status.code !== 200) {
-            console.log("Error: can't send reset password email!");
-        } else {
-            console.log("reset password email sent successfully");
-        }
-        return data;
-    }).fail((data) => {
-        console.log(data);
-        console.log("Sending reset password email failed");
-        return data;
-    });
-
-    return resetPasswordPromise;
-}
-
-/**
- * Updates aEi.ai account password for the given username and password-reset token.
- *
- * @param username Client's username.
- * @param passwordResetToken Password-reset token provided by server.
- * @param newPassword Client's new password.
- * @return A promise to update client's password.
- */
-function updatePassword(username, passwordResetToken, newPassword) {
-    // promise to reset password (send a reset password email to the client)
-    var updatePasswordPromise = $.ajax({
-        timeout: 20000,
-        type: 'PUT',
-        url: '/update-password',
-        headers: {
-            'username': username,
-            'token': passwordResetToken,
-            'password': newPassword
-        }
-    }).done((data) => {
-        console.log(data);
-        if (data.status.code !== 200) {
-            console.log("Error: can't update password!");
-        } else {
-            console.log("Password updated successfully");
-        }
-        return data;
-    }).fail((data) => {
-        console.log(data);
-        console.log("Updating password failed");
-        return data;
-    });
-
-    return updatePasswordPromise;
 }
