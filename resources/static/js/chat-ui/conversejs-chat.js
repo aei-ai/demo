@@ -17,13 +17,18 @@ converse.plugins.add('aei-plugin', {
             console.log(jid);
 
             // login to the aEi service and save access token in a cookie
-            login(username, password);
-
-            // create a new aEi user if not already created
-            let userId = $.cookie(jid);
-            if (typeof userId === "undefined" || userId === null || userId === "") {
-                createNewUser(jid, getAccessToken());
-            }
+            login(username, password)
+                .then((data) => {
+                    // create a new aEi user if not already created
+                    let userId = $.cookie(jid);
+                    if (typeof userId === "undefined" || userId === null || userId === "") {
+                        createNewUser(jid, null, getAccessToken());
+                    }
+                })
+                .catch((data) => {
+                    console.log("Login Unsuccessful");
+                    console.log(data);
+                });
         });
 
         // NOTE: make sure recipient user is already logged in ConverseJS chat (in another browser tab)
@@ -56,13 +61,20 @@ converse.plugins.add('aei-plugin', {
                 .then(function (data) {
                     console.log("User updated successfully");
                     console.log(data);
-                    // get updated user
-                    let user = data.interaction.users.filter(u => u.userId === userId)[0];
-                    console.log(user);
-                    // visualize updated user
-                    updateData(user2Data(user));
-                    // refresh scatter chart
-                    scatterChart.refreshChart();
+                    // make an API call to the aEi.ai service and get updated user affective state
+                    getUser(userId, getAccessToken())
+                        .then(function (data) {
+                            console.log(data);
+                            let user = data.user;
+                            console.log("Got user " + user.userId + " successfully");
+                            // visualize the updated user
+                            updateData(user2Data(user));
+                            // refresh scatter chart
+                            scatterChart.refreshChart();
+                        }).catch(function (data) {
+                            console.log(data);
+                            console.log("Failed getting user");
+                        });
                 }).catch(function (data) {
                     console.log(data);
                     console.log("Updating user failed");
