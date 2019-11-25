@@ -26,7 +26,7 @@ Let's assume you have created two users with `user1@conversejs.org` and `user2@c
 
 **3. If not automatically logged in, log in for both users in the chat UI,**
 
-**4. In the chat UI of `user1@conversejs.org`, create a new `groupchat` by clicking on the `+` button,
+**4. In the chat UI of `user1@conversejs.org`, create a new `groupchat` by clicking on the `+` button,**
 
 ***NOTE:*** if you already have a `converse.js` groupchat, you can use that here.
 
@@ -48,7 +48,7 @@ Let's assume you have created two users with `user1@conversejs.org` and `user2@c
 
 **10. Click on `Enter Groupchat` button,**
 
-**11. Enter `I am happy` in chat UI of `user2@conversejs.org`,**
+**11. Enter "`I am happy`" in chat UI of `user2@conversejs.org`,**
 
 **12. Notice the update in affect model of `user2@conversejs.org` in available charts,**
 
