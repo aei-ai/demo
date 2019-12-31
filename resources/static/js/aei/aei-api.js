@@ -407,7 +407,7 @@ function addPaymentSource(source, accessToken) {
     let addPaymentSourcePromise = $.ajax({
         timeout: TIMEOUT,
         type: 'POST',
-        url: API_URL + "/sources" + "?source=" + source,
+        url: API_URL + "/sources/" + source,
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
@@ -504,7 +504,7 @@ function deleteSource(sourceId, accessToken){
     let deletePaymentSourcePromise = $.ajax({
         timeout: TIMEOUT,
         type: 'DELETE',
-        url: API_URL + "/sources" + "?source_id=" + sourceId,
+        url: API_URL + "/sources/" + sourceId,
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
