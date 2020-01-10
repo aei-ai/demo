@@ -10,6 +10,7 @@ let TIMEOUT = 20000;
  * @param email Client's email.
  * @param password Client's password.
  * @param agreed True if client agreed to the statement of use and privacy policy.
+ * @return Promise to register the client with given credentials.
  */
 function register(username, email, password, agreed) {
     // make a API call to the aEi.ai service to register
@@ -45,6 +46,7 @@ function register(username, email, password, agreed) {
  *
  * @param username Client's username.
  * @param password Client's password.
+ * @return Promise to login the client with given credentials.
  */
 function login(username, password) {
     // make a API call to the aEi.ai service to get access token
@@ -82,6 +84,7 @@ function login(username, password) {
  * @param username New user's username.
  * @param attributes User custom attributes as string key-value pairs.
  * @param accessToken Client's access token.
+ * @return Promise to create a new user.
  */
 function createNewUser(username, attributes, accessToken) {
     // make an API call to the aEi.ai service to create a new user for user
@@ -116,6 +119,7 @@ function createNewUser(username, attributes, accessToken) {
  *
  * @param userIds List of user IDs in new interaction.
  * @param accessToken Client's access token.
+ * @return Promise to create a new interaction.
  */
 function createNewInteraction(userIds, accessToken) {
     // prepare the data using the user IDs
@@ -158,8 +162,9 @@ function createNewInteraction(userIds, accessToken) {
  * Adds given user to the given interaction in aEi.ai service.
  *
  * @param interactionId Given interaction ID.
- * @param userIds Given user ID.
+ * @param userIds List of user IDs to add to the interaction.
  * @param accessToken Client's access token.
+ * @return Promise to add given users to the interaction.
  */
 function addUsersToInteraction(interactionId, userIds, accessToken) {
     // prepare the data using the user IDs
@@ -202,7 +207,7 @@ function addUsersToInteraction(interactionId, userIds, accessToken) {
  * @param interactionId Target interaction ID.
  * @param text User's
  * @param accessToken Client's access token.
- * @returns A promise to call the aEi.ai API.
+ * @return A promise to send a text input to the interaction.
  */
 function newTextInput(userId, interactionId, text, accessToken) {
     // promise to make an API call to the aEi.ai service to send the new user utterance to the interaction
@@ -236,7 +241,7 @@ function newTextInput(userId, interactionId, text, accessToken) {
  *
  * @param userId Given user ID.
  * @param accessToken Client's access token.
- * @returns A promise to get the aEi.ai user.
+ * @return A promise to get the aEi.ai user.
  */
 function getUser(userId, accessToken) {
     // promise to get the the make an API call to the aEi.ai
@@ -268,10 +273,10 @@ function getUser(userId, accessToken) {
  * Gets number of  aEi.ai used free queries of the currently signed in client.
  *
  * @param accessToken Client's access token.
- * @returns A promise to get the aEi.ai number of used free queries.
+ * @return A promise to get number of used free queries to the aEi.ai API.
  */
 function getUsedFreeQueries(accessToken) {
-    // promise to get the the make an API call to the aEi.ai
+    // promise to get number of free queries to the aEi.ai API
     var getUsedFreeQueriesPromise = $.ajax({
         timeout: TIMEOUT,
         type: 'GET',
@@ -300,7 +305,7 @@ function getUsedFreeQueries(accessToken) {
  * Gets number of aEi.ai used paid queries (in current month) of the currently signed in client.
  *
  * @param accessToken Client's access token.
- * @returns A promise to get the aEi.ai number of used paid queries.
+ * @return A promise to get number of used paid queries to the aEi.ai API.
  */
 function getUsedPaidQueries(accessToken) {
     // promise to get the the make an API call to the aEi.ai
@@ -333,7 +338,7 @@ function getUsedPaidQueries(accessToken) {
  * Gets the payment method information from Stripe for a given customer.
  *
  * @param accessToken Client's access token.
- * @returns Promise to get payment method information from Stripe for a give customer.
+ * @return A promise to get all payment method information from Stripe for a give customer.
  */
 function getPaymentSources(accessToken) {
     // output contains list of payment information, each as a dictionary
@@ -367,7 +372,7 @@ function getPaymentSources(accessToken) {
  *
  * @param sourceId Target payment source ID.
  * @param accessToken Client's access token.
- * @returns Promise to get payment method information from Stripe for a give customer.
+ * @return A promise to get a specific payment method information from Stripe for a give customer.
  */
 function getPaymentSource(sourceId, accessToken) {
     // output contains dictionary of payment information
@@ -400,7 +405,7 @@ function getPaymentSource(sourceId, accessToken) {
  * Adds a payment source ID (previously generated via Stripe API) to the client account.
  *
  * @param accessToken Client's access token.
- * @returns Promise to add payment source ID to client account.
+ * @return A promise to add a payment source ID to client account.
  */
 function addPaymentSource(source, accessToken) {
     // output contains dictionary of payment information
@@ -433,7 +438,7 @@ function addPaymentSource(source, accessToken) {
  * Get the subscription information for given customer
  *
  * @param accessToken Client's access token.
- * @returns String containing Subscription information
+ * @return A promise to get subscription information.
  */
 function getSubscription(accessToken) {
     let getSubscriptionPromise = $.ajax({
@@ -466,6 +471,7 @@ function getSubscription(accessToken) {
  *
  * @param accessToken Client's access token.
  * @param subscriptionType Given new subscription type.
+ * @return A promise to update subscription.
  */
 function updateSubscription(subscriptionType, accessToken) {
     let updateSubscriptionPromise = $.ajax({
@@ -498,7 +504,7 @@ function updateSubscription(subscriptionType, accessToken) {
  *
  * @param sourceId Given source ID.
  * @param accessToken Client's access token.
- * @return A promise for deleting the payment source given the source ID.
+ * @return A promise for deleting the payment source with given ID.
  */
 function deleteSource(sourceId, accessToken){
     let deletePaymentSourcePromise = $.ajax({
@@ -560,7 +566,7 @@ function updateSource(sourceId, updateParams, accessToken){
 
 // TODO: add this API to documentation
 /**
- * Changes aEi.ai account password to the given new password.
+ * Changes aEi.ai account password to the given new password, when user has a valid access token.
  *
  * @param password Given new password.
  * @param accessToken Client's access token.
@@ -600,7 +606,7 @@ function changePassword(password, accessToken) {
  * @return A promise to reset the password.
  */
 function resetPassword(email) {
-    // promise to reset password (send a reset password email to the client)
+    // promise to send a reset password email to the client
     var resetPasswordPromise = $.ajax({
         timeout: TIMEOUT,
         type: 'POST',
@@ -632,7 +638,7 @@ function resetPassword(email) {
  * @return A promise to update client's password.
  */
 function updatePassword(username, passwordResetToken, newPassword) {
-    // promise to reset password (send a reset password email to the client)
+    // promise to reset password
     var updatePasswordPromise = $.ajax({
         timeout: TIMEOUT,
         type: 'PUT',
