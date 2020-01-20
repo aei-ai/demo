@@ -63,9 +63,6 @@ function login(username, password) {
         if (typeof data.access_token === "undefined") {
             console.log("Error: no access token received!");
         } else {
-            // save access token in cookie (NOTE: all chat users use the same access token)
-            $.cookie('aei_token', JSON.stringify(data), {expires: data.expires_in});
-            $.cookie('aei_username', username, {expires: data.expires_in});
             console.log("Login success");
         }
         return data;
@@ -79,14 +76,13 @@ function login(username, password) {
 }
 
 /**
- * Creates a new user with given username in aEi.ai service.
+ * Creates a new user in aEi.ai service.
  *
- * @param username New user's username.
  * @param attributes User custom attributes as string key-value pairs.
  * @param accessToken Client's access token.
  * @return Promise to create a new user.
  */
-function createNewUser(username, attributes, accessToken) {
+function createNewUser(attributes, accessToken) {
     // make an API call to the aEi.ai service to create a new user for user
     $.ajax({
         data: attributes,
@@ -101,10 +97,7 @@ function createNewUser(username, attributes, accessToken) {
         if (data.status.code !== 200) {
             console.log("Error: can't create user!");
         } else {
-            // save created user in cookie
-            let userId = data.user.userId;
-            $.cookie(username, userId);
-            console.log("User " + userId + " created successfully");
+            console.log("User " + data.user.userId + " created successfully");
         }
         return data;
     }).fail((data) => {
@@ -112,6 +105,39 @@ function createNewUser(username, attributes, accessToken) {
         console.log("User creation failed");
         return data;
     });
+}
+
+/**
+ * Gets aEi.ai interaction with given interaction ID.
+ *
+ * @param interactionId Given interaction ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the aEi.ai interaction.
+ */
+function getInteraction(interactionId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getInteractionPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/interactions/' + interactionId,
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get interaction!");
+        } else {
+            console.log("Got interaction successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Getting interaction failed");
+        return data;
+    });
+
+    return getInteractionPromise;
 }
 
 /**
@@ -145,10 +171,7 @@ function createNewInteraction(userIds, accessToken) {
         if (data.status.code !== 200) {
             console.log("Error: can't create new interaction!");
         } else {
-            // save interaction ID in cookie
-            let interactionId = data.interaction.interactionId;
-            $.cookie('interaction', interactionId);
-            console.log("Interaction " + interactionId + " created successfully");
+            console.log("Interaction " + data.interaction.interactionId + " created successfully");
         }
         return data;
     }).fail((data) => {
@@ -260,7 +283,7 @@ function getUser(userId, accessToken) {
             console.log("Got user successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user failed");
         return data;
@@ -293,7 +316,7 @@ function getUserEmotion(userId, accessToken) {
             console.log("Got user emotion successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user emotion failed");
         return data;
@@ -326,7 +349,7 @@ function getUserMood(userId, accessToken) {
             console.log("Got user mood successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user mood failed");
         return data;
@@ -359,7 +382,7 @@ function getUserPersonality(userId, accessToken) {
             console.log("Got user personality successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user personality failed");
         return data;
@@ -392,7 +415,7 @@ function getUserSatisfaction(userId, accessToken) {
             console.log("Got user satisfaction successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user satisfaction failed");
         return data;
@@ -425,7 +448,7 @@ function getUserSocialPerception(userId, accessToken) {
             console.log("Got user social-perception successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Getting user social-perception failed");
         return data;
@@ -590,7 +613,7 @@ function addPaymentSource(sourceId, accessToken) {
             console.log("Added payment source successfully");
         }
         return data;
-    }).fail(function (data) {
+    }).fail((data) => {
         console.log(data);
         console.log("Adding payment source failed");
         return data;

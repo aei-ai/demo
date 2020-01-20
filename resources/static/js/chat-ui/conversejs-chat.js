@@ -17,18 +17,31 @@ converse.plugins.add('aei-plugin', {
             console.log(jid);
 
             // login to the aEi service and save access token in a cookie
-            login(username, password)
-                .then((data) => {
-                    // create a new aEi user if not already created
-                    let userId = $.cookie(jid);
-                    if (typeof userId === "undefined" || userId === null || userId === "") {
-                        createNewUser(jid, null, getAccessToken());
+            // find username/password in auth.js file
+            login(username, password).then((data) => {
+                if (data.access_token) {
+                    // login and save aEi username and token in cookie
+                    $.cookie('aei_token', JSON.stringify(data), {expires: data.expires_in});
+                    $.cookie('aei_username', username);
+                }
+            });
+
+            // create a new aEi user if not already created
+            let userId = $.cookie(jid);
+            if (typeof userId === "undefined" || userId === null || userId === "") {
+                createNewUser(null, getAccessToken())
+                    .then((data) => {
+                        if (data.user) {
+                            // save created user in cookie
+                            $.cookie(jid, data.user.userId);
+                        }
+                    })
+                    .catch((data) => {
+                        console.log("Login Unsuccessful");
+                        console.log(data);
                     }
-                })
-                .catch((data) => {
-                    console.log("Login Unsuccessful");
-                    console.log(data);
-                });
+                );
+            }
         });
 
         // NOTE: make sure recipient user is already logged in ConverseJS chat (in another browser tab)
@@ -47,7 +60,12 @@ converse.plugins.add('aei-plugin', {
                 addUserToInteraction(interactionId, recipientId, getAccessToken());
             } else {
                 // create a new interaction and add sender and recipient to it
-                createNewInteraction([senderId, recipientId], getAccessToken());
+                createNewInteraction([senderId, recipientId], getAccessToken()).then((data) => {
+                    if (data.interaction) {
+                        // save interaction ID in cookie
+                        $.cookie('interaction', data.interaction.interactionId);
+                    }
+                });
             }
         });
 
