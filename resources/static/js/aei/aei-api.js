@@ -205,7 +205,7 @@ function addUsersToInteraction(interactionId, userIds, accessToken) {
  *
  * @param userId Source user ID.
  * @param interactionId Target interaction ID.
- * @param text User's
+ * @param text User's utterance.
  * @param accessToken Client's access token.
  * @return A promise to send a text input to the interaction.
  */
@@ -267,6 +267,171 @@ function getUser(userId, accessToken) {
     });
 
     return getUserPromise;
+}
+
+/**
+ * Gets user's emotion with given user ID.
+ *
+ * @param userId Given user ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the user's emotion.
+ */
+function getUserEmotion(userId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getUserEmotionPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/users/' + userId + "/emotion",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get user emotion!");
+        } else {
+            console.log("Got user emotion successfully");
+        }
+        return data;
+    }).fail(function (data) {
+        console.log(data);
+        console.log("Getting user emotion failed");
+        return data;
+    });
+
+    return getUserEmotionPromise;
+}
+
+/**
+ * Gets user's mood with given user ID.
+ *
+ * @param userId Given user ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the user's mood.
+ */
+function getUserMood(userId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getUserMoodPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/users/' + userId + "/mood",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get user mood!");
+        } else {
+            console.log("Got user mood successfully");
+        }
+        return data;
+    }).fail(function (data) {
+        console.log(data);
+        console.log("Getting user mood failed");
+        return data;
+    });
+
+    return getUserMoodPromise;
+}
+
+/**
+ * Gets user's personality with given user ID.
+ *
+ * @param userId Given user ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the user's personality.
+ */
+function getUserPersonality(userId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getUserPersonalityPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/users/' + userId + "/personality",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get user personality!");
+        } else {
+            console.log("Got user personality successfully");
+        }
+        return data;
+    }).fail(function (data) {
+        console.log(data);
+        console.log("Getting user personality failed");
+        return data;
+    });
+
+    return getUserPersonalityPromise;
+}
+
+/**
+ * Gets user's satisfaction with given user ID.
+ *
+ * @param userId Given user ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the user's satisfaction.
+ */
+function getUserSatisfaction(userId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getUserSatisfactionPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/users/' + userId + "/satisfaction",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get user satisfaction!");
+        } else {
+            console.log("Got user satisfaction successfully");
+        }
+        return data;
+    }).fail(function (data) {
+        console.log(data);
+        console.log("Getting user satisfaction failed");
+        return data;
+    });
+
+    return getUserSatisfactionPromise;
+}
+
+/**
+ * Gets user's social-perception with given user ID.
+ *
+ * @param userId Given user ID.
+ * @param accessToken Client's access token.
+ * @return A promise to get the user's social-perception.
+ */
+function getUserSocialPerception(userId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getUserSocialPerceptionPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/users/' + userId + "/social-perception",
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get user social-perception!");
+        } else {
+            console.log("Got user social-perception successfully");
+        }
+        return data;
+    }).fail(function (data) {
+        console.log(data);
+        console.log("Getting user social-perception failed");
+        return data;
+    });
+
+    return getUserSocialPerceptionPromise;
 }
 
 /**
@@ -404,22 +569,23 @@ function getPaymentSource(sourceId, accessToken) {
 /**
  * Adds a payment source ID (previously generated via Stripe API) to the client account.
  *
+ * @param sourceId Payment source ID.
  * @param accessToken Client's access token.
  * @return A promise to add a payment source ID to client account.
  */
-function addPaymentSource(source, accessToken) {
+function addPaymentSource(sourceId, accessToken) {
     // output contains dictionary of payment information
     let addPaymentSourcePromise = $.ajax({
         timeout: TIMEOUT,
         type: 'POST',
-        url: API_URL + "/sources/" + source,
+        url: API_URL + "/sources/" + sourceId,
         headers: {
             'Authorization': 'Bearer ' + accessToken
         }
     }).done((data) => {
         console.log(data);
         if (data.status.code !== 200) {
-            console.log("Error: can't add payment source: " + source);
+            console.log("Error: can't add payment source: " + sourceId);
         } else {
             console.log("Added payment source successfully");
         }
@@ -435,7 +601,7 @@ function addPaymentSource(source, accessToken) {
 
 // TODO: add this API to documentation
 /**
- * Get the subscription information for given customer
+ * Get the subscription information for given customer.
  *
  * @param accessToken Client's access token.
  * @return A promise to get subscription information.
@@ -506,7 +672,7 @@ function updateSubscription(subscriptionType, accessToken) {
  * @param accessToken Client's access token.
  * @return A promise for deleting the payment source with given ID.
  */
-function deleteSource(sourceId, accessToken){
+function deleteSource(sourceId, accessToken) {
     let deletePaymentSourcePromise = $.ajax({
         timeout: TIMEOUT,
         type: 'DELETE',
