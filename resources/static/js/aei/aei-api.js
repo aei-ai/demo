@@ -149,20 +149,13 @@ function getInteraction(interactionId, accessToken) {
  */
 function createNewInteraction(userIds, accessToken) {
     // prepare the data using the user IDs
-    let data = "";
-    for (let i = 0; i < userIds.length; i++) {
-        if (i > 0) {
-            data += "&";
-        }
-        let userId = userIds[i];
-        data += "user_id=" + userId;
-    }
+    let params = params("user_id", userIds);
 
     // make an API call to the aEi.ai service to create a new interaction for given user IDs
     $.ajax({
         timeout: TIMEOUT,
         type: 'POST',
-        url: API_URL + '/interactions?' + data,
+        url: API_URL + '/interactions?' + params,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -191,20 +184,13 @@ function createNewInteraction(userIds, accessToken) {
  */
 function addUsersToInteraction(interactionId, userIds, accessToken) {
     // prepare the data using the user IDs
-    let data = "";
-    for (let i = 0; i < userIds.length; i++) {
-        if (i > 0) {
-            data += "&";
-        }
-        let userId = userIds[i];
-        data += "user_id=" + userId;
-    }
+    let params = params("user_id", userIds);
 
     // make an API call to the aEi.ai service to add a user to interaction
     $.ajax({
         timeout: TIMEOUT,
         type: 'PUT',
-        url: API_URL + '/interactions/' + interactionId + '/users?' + data,
+        url: API_URL + '/interactions/' + interactionId + '/users?' + params,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
@@ -235,7 +221,7 @@ function addUsersToInteraction(interactionId, userIds, accessToken) {
 function newTextInput(userId, interactionId, text, accessToken) {
     // promise to make an API call to the aEi.ai service to send the new user utterance to the interaction
     var newTextInputPromise = $.ajax({
-        data: {text: text},
+        data: text,
         timeout: TIMEOUT,
         type: 'POST',
         url: API_URL + '/inputs/text' + '?user_id=' + userId + '&interaction_id=' + interactionId,
@@ -257,6 +243,40 @@ function newTextInput(userId, interactionId, text, accessToken) {
     });
 
     return newTextInputPromise;
+}
+
+/**
+ * Analyzes a list of interactions passed as JSON.
+ *
+ * @param jsonString Interaction list as JSON string.
+ * @param accessToken Client's access token.
+ * @return A promise to analyze given interaction list.
+ */
+function newInteractionListInput(jsonString, accessToken) {
+    // promise to make an API call to the aEi.ai service to analyze the interaction list
+    var newInteractionListInputPromise = $.ajax({
+        data: jsonString,
+        timeout: TIMEOUT,
+        type: 'POST',
+        url: API_URL + '/inputs/interaction-list',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't analyze interaction list input!");
+        } else {
+            console.log("Analyzed interaction list successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Analyzing interaction list failed");
+        return data;
+    });
+
+    return newInteractionListInputPromise;
 }
 
 /**
@@ -852,4 +872,21 @@ function updatePassword(username, passwordResetToken, newPassword) {
     });
 
     return updatePasswordPromise;
+}
+
+/**
+ * Converts a given list of parameters to string with a single name.
+ *
+ * @param name Parameter name.
+ * @param values Parameter values.
+ */
+function params(name, values) {
+    let params = "";
+    for (let i = 0; i < values.length; i++) {
+        if (i > 0) {
+            params += "&";
+        }
+        params += name + "=" + values[i];
+    }
+    return params;
 }
