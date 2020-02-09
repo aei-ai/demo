@@ -141,6 +141,38 @@ function getInteraction(interactionId, accessToken) {
 }
 
 /**
+ * Gets list of all interactions of the client.
+ *
+ * @param accessToken Client's access token.
+ * @return A promise to get list of all the client interactions.
+ */
+function getAllInteractions(interactionId, accessToken) {
+    // promise to get the the make an API call to the aEi.ai
+    var getAllInteractionsPromise = $.ajax({
+        timeout: TIMEOUT,
+        type: 'GET',
+        url: API_URL + '/interactions',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't get all client interactions!");
+        } else {
+            console.log("Got all interactions successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Getting all interactions failed");
+        return data;
+    });
+
+    return getAllInteractionsPromise;
+}
+
+/**
  * Creates a new aEi.ai interaction for given list of user IDs.
  *
  * @param userIds List of user IDs in new interaction.
