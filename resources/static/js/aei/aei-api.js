@@ -250,7 +250,7 @@ function addUsersToInteraction(interactionId, userIds, accessToken) {
  * @param accessToken Client's access token.
  * @return A promise to send a text input to the interaction.
  */
-function newTextInput(userId, interactionId, text, accessToken) {
+function sendText(userId, interactionId, text, accessToken) {
     // promise to make an API call to the aEi.ai service to send the new user utterance to the interaction
     var newTextInputPromise = $.ajax({
         data: text,
@@ -278,37 +278,73 @@ function newTextInput(userId, interactionId, text, accessToken) {
 }
 
 /**
- * Analyzes a list of interactions passed as JSON.
+ * Sends given user's image input to given interaction.
  *
- * @param jsonString Interaction list as JSON string.
+ * @param userId Source user ID.
+ * @param interactionId Target interaction ID.
+ * @param image User's input image URL.
  * @param accessToken Client's access token.
- * @return A promise to analyze given interaction list.
+ * @return A promise to send an image input to the interaction.
  */
-function newInteractionListInput(jsonString, accessToken) {
-    // promise to make an API call to the aEi.ai service to analyze the interaction list
-    var newInteractionListInputPromise = $.ajax({
-        data: jsonString,
+function sendImage(userId, interactionId, image, accessToken) {
+    // promise to make an API call to the aEi.ai service to send the new user image input to the interaction
+    var newImageInputPromise = $.ajax({
+        data: image,
         timeout: TIMEOUT,
         type: 'POST',
-        url: API_URL + '/inputs/interaction-list',
+        url: API_URL + '/inputs/image' + '?user_id=' + userId + '&interaction_id=' + interactionId,
         headers: {
             'Authorization': 'Bearer ' + accessToken,
         }
     }).done((data) => {
         console.log(data);
         if (data.status.code !== 200) {
-            console.log("Error: can't analyze interaction list input!");
+            console.log("Error: can't send image input!");
         } else {
-            console.log("Analyzed interaction list successfully");
+            console.log("Sent image input successfully");
         }
         return data;
     }).fail((data) => {
         console.log(data);
-        console.log("Analyzing interaction list failed");
+        console.log("Sending image input failed");
         return data;
     });
 
-    return newInteractionListInputPromise;
+    return newImageInputPromise;
+}
+
+/**
+ * Analyzes multiple inputs passed as JSON.
+ *
+ * @param inputs Inputs as JSON string.
+ * @param accessToken Client's access token.
+ * @return A promise to analyze given inputs.
+ */
+function sendInputs(inputs, accessToken) {
+    // promise to make an API call to the aEi.ai service to analyze multiple inputs
+    var newInputsPromise = $.ajax({
+        data: inputs,
+        timeout: TIMEOUT,
+        type: 'POST',
+        url: API_URL + '/inputs',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+        }
+    }).done((data) => {
+        console.log(data);
+        if (data.status.code !== 200) {
+            console.log("Error: can't analyze inputs!");
+        } else {
+            console.log("Analyzed inputs successfully");
+        }
+        return data;
+    }).fail((data) => {
+        console.log(data);
+        console.log("Analyzing inputs failed");
+        return data;
+    });
+
+    return newInputsPromise;
 }
 
 /**

@@ -75,7 +75,7 @@ converse.plugins.add('aei-plugin', {
             let userId = $.cookie(jid);
             let interactionId = $.cookie('interaction');
             // add user's utterance to the aEi.ai interaction to update involved users' affective state
-            newTextInput(userId, interactionId, messageText, getAccessToken())
+            sendText(userId, interactionId, messageText, getAccessToken())
                 .then(function (data) {
                     console.log("User updated successfully");
                     console.log(data);
